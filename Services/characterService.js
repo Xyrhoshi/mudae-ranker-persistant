@@ -1,4 +1,6 @@
 mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCode', 'Mode', 'PreferenceList', 'Utilities', function($http, $interval, $rootScope, MergeCode, Mode, PreferenceList, Utilities) {
+	var persistantTotal;
+	window.persistantTotal = 0;
 	var service = {
 		characters: [],
 		
@@ -76,6 +78,7 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 		
 		anilistReqInterval: null,
 
+
 		parseInputField: function (inputText)
 		{
 			service.getSortableObject(); // Initialize this up front
@@ -106,6 +109,7 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 					{
 						if (jsonInput.appState)
 						{
+							window.persistantTotal = jsonInput.appState.persistantTotal;
 							service.rankingInProgress = jsonInput.appState.rankingInProgress;
 							PreferenceList.setState(jsonInput.appState.preferenceState);
 						}
@@ -126,6 +130,8 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 				{
 					Utilities.showError('Well, you screwed something up: ' + e.Message, true);
 				}
+
+				console.log(jsonInput);
 				
 				return;
 			}
@@ -178,9 +184,11 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 						minimizedName: Utilities.minimizeName(characterName),
 						name: characterName, 
 						originalName: originalName,
-						series: seriesName, 
+						series: seriesName,
 						skip: false 
 					};
+
+					console.log(character);
 					
 					if (mergeCharacters)
 					{
@@ -234,6 +242,18 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 				service.anilistReqInterval = $interval(this.fetchSeries, 800, 0, true, seriesArray);
 				service.anilistReqInterval.then(this.requestIntervalResolve, this.requestIntervalReject);
 			}
+
+			if (window.persistantTotal == 0)
+			{
+				service.startRankMode();
+			}
+
+			else
+			{
+				service.resumeRankMode();
+			}
+
+			console.log("Test statement");
 		},
 		
 		requestIntervalResolve: function ()
@@ -418,6 +438,7 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 		{
 			var exportData = {
 				appState: {
+					persistantTotal: window.persistantTotal,
 					rankingInProgress: service.rankingInProgress,
 					preferenceState: PreferenceList.getState()
 				}, 
@@ -440,24 +461,20 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 
 			if (total > 0)
 			{
-				var output = '$firstmarry ' + chars[0].originalName;
-				
-				if (total > 1)
-				{
-					output += '\n\n$sortmarry pos ' + chars[0].originalName
+
+				var	output = '' + chars[0].originalName
 
 					for (var i = 1; i < total; i++)
 					{
-						if (i % 20 === 0)
+						if (i % 300 === 0)
 						{
-							output += '\n\n$sortmarry pos ' + chars[i-1].originalName + '$' + chars[i].originalName;
+							output += '\n\n' + chars[i-1].originalName + '$' + chars[i].originalName;
 						}
 						else
 						{
 							output += '$' + chars[i].originalName;
 						}
 					}
-				}
 
 				Utilities.showSuccess(output, false);
 			}
@@ -505,6 +522,7 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 			};
 
 			service.characters.push(character);
+			service.resumeRankMode();
 		},
 
 		mergeCharacter: function (character)
@@ -591,11 +609,15 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 						service.inMessageBox = true;
 
 						Utilities.confirm('Are you sure you want to delete this character?', 'Confirm Deletion').done(function (data, button) {
+							console.log("service.character before delete",service.character);
 							service.characters.splice(service.activeIndex, 1);
 							service.handleDeletedCharacter(service.activeIndex);
-
+							console.log("service.character after delete",service.character);
+							console.log("service.activeIndex is",service.activeIndex);
 							// Reset the activeIndex to -1
 							service.activeIndex = -1;
+							window.persistantTotal--;
+							console.log("Character was deleted. Persistance is now",window.persistantTotal);
 							service.inMessageBox = false;
 							resolve();
 						}).fail(function (data, button) {
@@ -605,6 +627,8 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 						});
 					}
 				}
+
+				service.resumeRankMode();
 			});
 		},
 
@@ -721,6 +745,7 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 			}
 		},
 
+
 		startRankMode: function()
 		{
 			// Display the Ranking Container
@@ -794,14 +819,17 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 			// Reset the arrays and all data again
 			service._rankedCharacters.length = 0;
 			service._discardedCharacters.length = 0;
-			
+
 			var totalCharacters = service.characters.length;
+			console.log("resume mode total characters is",totalCharacters);
+			console.log("resume mode persistance characters is",window.persistantTotal);
 
 			// Populate the arrays we'll be sorting and discarding
 			for (var i = 0; i < totalCharacters; i++)
 			{
 				var character = service.characters[i];
-				
+				console.log(character);
+				console.log(service.characters)
 				if (character.skip)
 				{
 					service._discardedCharacters.push(character);
@@ -812,6 +840,7 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 				}
 			}
 
+			console.log("Resume mode character array after initiated",service.characters);
 			PreferenceList.resume(service._rankedCharacters.length);
 			service.presentCardsForComparison();
 		},
@@ -824,34 +853,81 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 			var total = sortedIndices.length;
 			var newCharacters = [];
 
-			for (var i = 0; i < total; i++)
+			console.log ("end mode total is",total);
+			console.log ("end mode persistance is", window.persistantTotal);
+			
+			if (service._rankedCharacters.length != window.persistantTotal)
 			{
-				newCharacters.push(service._rankedCharacters[sortedIndices[i]]);
+				for (var i = 0; i < total; i++)
+				{
+					console.log(sortedIndices[i]);
+					console.log(service.characters[i]);
+					newCharacters.push(service._rankedCharacters[sortedIndices[i]]);
+					console.log(service._rankedCharacters[sortedIndices[i]]);
+					console.log(sortedIndices[i]);
+				}
+				console.log("end mode sorted indices is",sortedIndices);
+				console.log("end mode newCharacters array is",newCharacters);
+				newCharacters.push(...service._discardedCharacters);
+				service.updateAll(newCharacters);
+				service.toggleMode();
+
+				window.persistantTotal = total;
+				console.log ("Persistance was set to",window.persistantTotal);
+				console.trace();
+				sortedIndices.sort(function(a, b){return a - b});
+				console.log("===RANKING IS DONE===");
 			}
 
-			newCharacters.push(...service._discardedCharacters);
+			else
+			{
+				for (var i = 0; i < total; i++)
+				{
+					console.log(sortedIndices[i]);
+					console.log(service.characters[i]);
+					newCharacters.push(service._rankedCharacters[sortedIndices[i]]);
+					console.log(service._rankedCharacters[sortedIndices[i]]);
+					console.log(sortedIndices[i]);
+				}
+				console.log("end mode sorted indices is",sortedIndices);
+				console.log("end mode newCharacters array is",newCharacters);
+				newCharacters.push(...service._discardedCharacters);
+				service.updateAll(newCharacters);
+				service.toggleMode();
 
-			service.updateAll(newCharacters);
-			service.toggleMode();
-
-			service.rankingInProgress = false;
+				window.persistantTotal = total;
+				console.log ("Persistance was set to",window.persistantTotal);
+				console.trace();
+				sortedIndices.sort(function(a, b){return a - b});
+				console.log("===RANKING IS DONE===");
+			}
 		},
 
 		presentCardsForComparison: function ()
 		{
 			var displayCards = PreferenceList.getQuestion();
-			
-			if (displayCards)
+			console.log("getQuestion returned value",displayCards);
+			if (service._rankedCharacters.length != window.persistantTotal)
 			{
-				service._currentLeftIndex = displayCards.leftCompareIndex;
-				service._currentRightIndex = displayCards.rightCompareIndex;
+				if (displayCards)
+				{
+					service._currentLeftIndex = displayCards.leftCompareIndex;
+					service._currentRightIndex = displayCards.rightCompareIndex;
 
-				service.leftCompare = service._rankedCharacters[service._currentLeftIndex];
-				service.rightCompare = service._rankedCharacters[service._currentRightIndex];
+					service.leftCompare = service._rankedCharacters[service._currentLeftIndex];
+					service.rightCompare = service._rankedCharacters[service._currentRightIndex];
+				}
+				else
+				{
+					console.log("cards were presented");
+					service.endRankMode(); // Or do something else?
+				}
 			}
-			else
+
+			else 
 			{
-				service.endRankMode(); // Or do something else?
+				console.log("cards were not presented");
+				service.endRankMode();
 			}
 		},
 
@@ -940,6 +1016,8 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 						}
 					}
 				}
+
+				service.resumeRankMode();
 			}
 		},
 

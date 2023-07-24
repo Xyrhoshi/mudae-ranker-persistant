@@ -1,41 +1,44 @@
 body
 {
-	font-family: Calibri, Helvetica, Arial;
+	font-family: Calibri, Helvetica, Arial, Constantia;
 }
 
 .InputField, .OutputField
 {
 	resize: none;
-	width: 45%;
+	width: 49%;
 	height: 10em;
 }
 
 .CharacterCardContainer
 {
 	display: flex;
+	opacity: 1;
 	flex-wrap: wrap;
 }
 
 .CharacterThumb
 {
-	background-color: rgba(255,255,255,.9);
-	border-color: rgb(20,20,20);
-	border-radius: 6px;
+	background-color: rgba(0,0,0);
+	border-color: rgb(0,0,0);
+	border-radius: 0px;
 	border-style: solid;
-	border-width: 1px;
-	box-shadow: 2px 2px 3px rgb(90,90,90);
+	border-width: 0px;
+	font-color: rgb(0,0,0);
 	box-sizing: border-box;
-	width: 5%;
-	padding: 3px;
+	width: 20%;
+	padding: 1px;
 	display: flex;
-	margin: 3px;
+	margin: 0px;
 	cursor: pointer;
 }
 
 .CharacterThumb .CharacterName
 {
-	display: none;
-	font-size: 80%;
+	display: flex;
+	position: absolute;
+	background-color: rgba(0,0,0,.7);
+	font-size: 150%;
 	font-weight: bold;
 	overflow: hidden;
 }
@@ -57,6 +60,21 @@ body
 	width: 100%;
 	height: 100%;
 	border-radius: 6px;
+}
+
+.CharacterThumb .CharacterClose
+{
+	display: none;
+}
+
+.CharacterThumb.CharacterFull .CharacterClose
+{
+	display: flex;
+}
+
+.CharacterThumb.CharacterFull .CharacterName
+{
+	position: center;
 }
 
 .CharacterThumb .CharacterURL
@@ -90,7 +108,7 @@ body
 	display: block;
 	font-size: 100%;
 	font-weight: bold;
-	margin: 2px 0;
+	margin: 25px 0;
 	padding: 2px;
 }
 
@@ -157,7 +175,7 @@ body
 
 .NewCharacterCard
 {
-	min-width:20%;
+	min-width:10%;
 }
 
 /******************* Rank Mode *******************/
@@ -183,6 +201,7 @@ body
 .RankingContainer .CharacterThumb.CharacterFull
 {
 	max-width: 50%;
+	width: 50%;
 	cursor: pointer;
 }
 
@@ -198,7 +217,7 @@ body
 	top: 50%;
 	transform: translate(-50%, -50%);
 	
-	background-color: rgb(255,255,255);
+	background-color: rgb(0,0,0);
 	border-color: rgb(20,20,20);
 	border-radius: 6px;
 	border-style: solid;

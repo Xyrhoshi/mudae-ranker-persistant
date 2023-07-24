@@ -79,10 +79,11 @@ mudaeRanker.service('PreferenceList', ['RankChoice', function(RankChoice) {
 		resume: function (count)
 		{
 			service.size = count;
-
+			console.log("service size count value",count);
 			var indicesLength = service.indices.length;
 			var indexOfCurrentInProgress = service.getIndexOfCurrentInProgress();
-
+			console.log("Unsorted service.indices value",service.indices);
+			console.trace();
 			for (var i = indicesLength - 1; i >= 0; i--)
 			{
 				if (service.indices[i].skip)
@@ -105,17 +106,24 @@ mudaeRanker.service('PreferenceList', ['RankChoice', function(RankChoice) {
 				}
 			}
 
+			service.indices.sort(function(a, b){return a.index - b.index});
+			console.log("Sorted service.indices value",service.indices);
+			console.log("service.currentIndex value",service.currentIndex);
+			console.log("indicesLength value",indicesLength);
 			if (service.currentIndex < indicesLength) // If the current index was added to the indices
 			{
 				// Then we need to pop the index out and update it to its new value
-				service.currentIndex = service.indices.splice(service.lastCompare, 1)[0].index;
+				service.currentIndex = window.persistantTotal;
+				console.log("check what service.currentIndex is now",service.currentIndex);
 			}
 		},
 
 		getQuestion: function()
 		{
 			if (service.currentIndex >= service.size) // If we've gone past the end of the array, stop
+			{
 				return null;
+			}
 				
 			service.centerIndex = Math.floor((service.min + service.max) / 2); // Calculate the center index
 
@@ -125,14 +133,24 @@ mudaeRanker.service('PreferenceList', ['RankChoice', function(RankChoice) {
 			});
 		},
 
+		getPersistantTotal: function()
+		{
+			var persistantTotal = service.indices.length;
+			return persistantTotal;
+		},
+
 		getOrder: function()
 		{
 			var index = [];
 
 			for (var i = 0; i < service.indices.length; i++)
 			{
+				console.log("getOrder order stepbystep",service.indices[i]);
 				index.push(service.indices[i].index);
 			}
+
+			console.log("getOrder Index",index);
+
 
 			return index;
 		},
