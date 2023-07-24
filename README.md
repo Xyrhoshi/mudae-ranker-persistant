@@ -1,3 +1,8 @@
+# Persistant Version
+ This fork of the mudae ranker by LieutenantCrunch is intended to allow users to continuously rank their characters even after the rank sort is finalized. It allows you to delete, move cards and otherwise use the app as normal while allowing you to easily sort new characters to your long list of waifus and husbandos!
+
+ I have some past programming experience but knew 0 about javascript this was a fun little side project of learning code and trying to customize it to my liking. It is stitched together with hopes and dreams and a lot of spaghetti, so whatever bugs the original had, you may experience even more. I did try to make it fool-proof (for a fool such as myself) but your mileage may vary.
+
 # Mudae Ranker
  Preference-based Mudae collection ranking app
 
