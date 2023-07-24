@@ -4,6 +4,8 @@
 ## Summary
 Original concept by: [DarkMage530](https://github.com/jonmervine)
 
+Modernized code and concept by: [LieutenantCrunch](https://github.com/LieutenantCrunch)
+
 Intended for use with the [Mudae bot for Discord](https://discordbots.org/bot/432610292342587392)
 
 This app will allow you to sort your collection based on a series of "x vs y" questions. You will be presented with two characters and asked which one you prefer. When you have completed answering all of the questions, your collection will be sorted based on your responses. It will then generate the commands you need to run in order to sort your collection on Discord
