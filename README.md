@@ -5,6 +5,8 @@
 
  I have some past programming experience but knew 0 about javascript, so this was a fun little side project of learning js and trying to customize it to my liking. It is stitched together with hopes and dreams and a lot of spaghetti, so whatever bugs the original had, you may experience even more. I did try to make it fool-proof (aka myself) but your mileage may vary.
 
+This is also my very first github project and probably my only one so I'm just here to share what I got.
+
 # Mudae Ranker
  Preference-based Mudae collection ranking app
 
