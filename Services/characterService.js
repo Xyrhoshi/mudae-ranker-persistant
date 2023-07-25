@@ -132,6 +132,8 @@ mudaeRanker.service('Characters', ['$http', '$interval', '$rootScope', 'MergeCod
 				}
 
 				console.log(jsonInput);
+
+				service.resumeRankMode();
 				
 				return;
 			}
